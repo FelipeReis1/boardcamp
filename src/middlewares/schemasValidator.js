@@ -1,4 +1,4 @@
-export function gameValidator(schema) {
+export function validateSchema(schema) {
   return (req, res, next) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
     if (error) {
@@ -7,13 +7,3 @@ export function gameValidator(schema) {
     next();
   };
 }
-
-// export function validateSchema(schema) {
-//   return (req, res, next) => {
-//     const { error } = schema.validate(req.body, { abortEarly: false });
-//     if (error) {
-//       return res.status(422).send(error.details.map((e) => e.message));
-//     }
-//     next();
-//   };
-// }
