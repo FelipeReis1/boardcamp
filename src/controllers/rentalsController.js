@@ -79,7 +79,7 @@ export async function endRent(req, res) {
 
     await db.query(
       `UPDATE rentals SET "returnDate" = $1, "delayFee" = $2  WHERE id = $3`,
-      [rentalEnd, fee, id]
+      [rentalEnd, parseInt(fee), id]
     );
 
     res.sendStatus(200);
