@@ -51,7 +51,7 @@ export async function updateCustomer(req, res) {
     `SELECT (cpf) FROM customers WHERE cpf = $1`,
     [cpf]
   );
-  if (customerCpf.rowCount !== 0) {
+  if (customerCpf.rowCount !== 0 && customerCpf.rows[0].id !== id) {
     return res.status(409).send("Esse cpf já está registrado!");
   }
   try {
