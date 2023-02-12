@@ -18,7 +18,7 @@ export async function getCustomersById(req, res) {
     if (customer.rowCount === 0) {
       return res.sendStatus(404);
     }
-    res.send(customer.rows);
+    res.send(customer.rows[0]);
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -47,6 +47,13 @@ export async function createCustomer(req, res) {
 export async function updateCustomer(req, res) {
   const { id } = req.params;
   const { name, phone, cpf, birthday } = req.body;
+  const customerCpf = await db.query(
+    `SELECT (cpf) FROM customers WHERE cpf = $1`,
+    [cpf]
+  );
+  if (customerCpf.rowCount !== 0) {
+    return res.status(409).send("Esse cpf já está registrado!");
+  }
   try {
     await db.query(
       `UPDATE customers SET name=$1,phone=$2,birthday=$3,cpf=$4 WHERE id = $5;`,
