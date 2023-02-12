@@ -71,8 +71,9 @@ export async function endRent(req, res) {
     }
     const { rentDate, daysRented, pricePerDay } = rental.rows[0];
     const rentalEnd = new Date();
+    const rentalStart = new Date(rentDate);
     const delay =
-      (rentalEnd.getTime() - rentDate.getTime()) / (24 * 60 * 60 * 1000) -
+      (rentalEnd.getTime() - rentalStart.getTime()) / (24 * 60 * 60 * 1000) -
       daysRented;
     const fee = delay > 0 ? delay * pricePerDay : 0;
 
