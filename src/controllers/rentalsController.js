@@ -40,7 +40,9 @@ export async function createRent(req, res) {
     if (daysRented <= 0) {
       return res.sendStatus(400);
     }
-
+    if (game.rows[0].stockTotal <= 0) {
+      return res.sendStatus(400);
+    }
     await db.query(
       `INSERT INTO rentals ( "customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee" ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [customerId, gameId, rentDate, daysRented, null, originalPrice, null]
@@ -63,6 +65,9 @@ export async function endRent(req, res) {
     );
     if (rental.rowCount === 0) {
       return res.sendStatus(404);
+    }
+    if (rental.rows[0].returnDate !== null) {
+      return res.sendStatus(400);
     }
     const { rentDate, daysRented, pricePerDay } = rental.rows[0];
     const rentalEnd = new Date();
