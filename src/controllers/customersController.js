@@ -47,14 +47,15 @@ export async function createCustomer(req, res) {
 export async function updateCustomer(req, res) {
   const { id } = req.params;
   const { name, phone, cpf, birthday } = req.body;
-  const customerCpf = await db.query(
-    `SELECT (cpf) FROM customers WHERE cpf = $1`,
-    [cpf]
-  );
-  if (customerCpf.rowCount !== 0 && customerCpf.rows[0].id !== id) {
-    return res.status(409).send("Esse cpf já está registrado!");
-  }
+
   try {
+    const customerCpf = await db.query(
+      `SELECT (cpf) FROM customers WHERE cpf = $1 AND id <> $2`,
+      [cpf, id]
+    );
+    if (customerCpf.rowCount !== 0) {
+      return res.status(409).send("Esse cpf já está registrado!");
+    }
     await db.query(
       `UPDATE customers SET name=$1,phone=$2,birthday=$3,cpf=$4 WHERE id = $5;`,
       [name, phone, birthday, cpf, id]
