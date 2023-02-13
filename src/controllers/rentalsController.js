@@ -47,10 +47,7 @@ export async function createRent(req, res) {
       `INSERT INTO rentals ( "customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee" ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [customerId, gameId, rentDate, daysRented, null, originalPrice, null]
     );
-    await db.query(`UPDATE games SET "stockTotal"=$1 WHERE id = $2 `, [
-      game.rows[0].stockTotal - 1,
-      gameId,
-    ]);
+
     res.sendStatus(201);
   } catch (error) {
     return res.status(500).send(error.message);
@@ -67,9 +64,7 @@ export async function endRent(req, res) {
     WHERE rentals.id = $1;`,
       [id]
     );
-    const rentGame = await db.query(`SELECT * FROM games WHERE id= $1`, [
-      rental.rows[0].gameId,
-    ]);
+
     if (rental.rowCount === 0) {
       return res.sendStatus(404);
     }
@@ -88,11 +83,6 @@ export async function endRent(req, res) {
       `UPDATE rentals SET "returnDate" = $1, "delayFee" = $2  WHERE id = $3`,
       [rentalEnd, fee, id]
     );
-    await db.query(`UPDATE games SET "stockTotal"=$1 WHERE id = $2 `, [
-      rental.rows[0].stockTotal + 1,
-      rentGame.rows[0].id,
-    ]);
-
     res.sendStatus(200);
   } catch (error) {
     return res.status(500).send(error.message);
