@@ -24,7 +24,7 @@ export async function getRentals(req, res) {
 
 export async function createRent(req, res) {
   const { customerId, gameId, daysRented } = req.body;
-  const rentDate = new Date();
+  const rentDate = new Date(2023, 1, 5);
   try {
     const game = await db.query(`SELECT * FROM games WHERE id = $1`, [gameId]);
     const originalPrice = game.rows[0].pricePerDay * daysRented;
@@ -72,14 +72,18 @@ export async function endRent(req, res) {
     const { rentDate, daysRented, pricePerDay } = rental.rows[0];
     const rentalEnd = new Date();
     const rentalStart = new Date(rentDate);
+    console.log(rentDate);
+    console.log(rentalEnd);
     const delay =
       (rentalEnd.getTime() - rentalStart.getTime()) / (24 * 60 * 60 * 1000) -
       daysRented;
-    const fee = delay > 0 ? delay * pricePerDay : 0;
+    const fee = delay > 0 ? parseInt(delay) * pricePerDay : 0;
+    console.log(parseInt(delay));
+    console.log(fee);
 
     await db.query(
       `UPDATE rentals SET "returnDate" = $1, "delayFee" = $2  WHERE id = $3`,
-      [rentalEnd, parseInt(fee), id]
+      [rentalEnd, fee, id]
     );
 
     res.sendStatus(200);
