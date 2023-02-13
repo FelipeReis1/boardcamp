@@ -67,6 +67,9 @@ export async function endRent(req, res) {
     WHERE rentals.id = $1;`,
       [id]
     );
+    const rentGame = await db.query(`SELECT * FROM games WHERE id= $1`, [
+      rental.rows[0].gameId,
+    ]);
     if (rental.rowCount === 0) {
       return res.sendStatus(404);
     }
@@ -85,6 +88,10 @@ export async function endRent(req, res) {
       `UPDATE rentals SET "returnDate" = $1, "delayFee" = $2  WHERE id = $3`,
       [rentalEnd, fee, id]
     );
+    await db.query(`UPDATE games SET "stockTotal"=$1 WHERE id = $2 `, [
+      rental.rows[0].stockTotal + 1,
+      rentGame.rows[0].id,
+    ]);
 
     res.sendStatus(200);
   } catch (error) {
