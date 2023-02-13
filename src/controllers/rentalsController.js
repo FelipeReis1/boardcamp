@@ -47,6 +47,10 @@ export async function createRent(req, res) {
       `INSERT INTO rentals ( "customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee" ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [customerId, gameId, rentDate, daysRented, null, originalPrice, null]
     );
+    await db.query(`UPDATE games SET "stockTotal"=$1 WHERE id = $2 `, [
+      game.rows[0].stockTotal - 1,
+      gameId,
+    ]);
     res.sendStatus(201);
   } catch (error) {
     return res.status(500).send(error.message);
